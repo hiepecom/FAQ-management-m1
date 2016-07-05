@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<config>
+    <menu>
+        <faq translate="title" module="faq">
+            <title>FAQ</title>
+            <sort_order>65</sort_order>
+            <children>
+                <faqgroup_management translate="title" module="faq">
+                    <title>FAQ Group Management</title>
+                    <sort_order>1</sort_order>
+                    <action>faq/adminhtml_faqgroup</action>
+                </faqgroup_management>
+                <faq_management translate="title" module="faq">
+                    <title>FAQ Management</title>
+                    <sort_order>2</sort_order>
+                    <action>faq/adminhtml_faq</action>
+                </faq_management>
+            </children>
+        </faq>
+    </menu>
+    <acl>
+        <resources>
+            <admin>
+                <children>
+                    <faq translate="title" module="faq">
+                        <title>FAQ</title>
+                        <sort_order>65</sort_order>
+                        <children>
+                            <faqgroup_management translate="title" module="faq">
+                                <title>FAQ Group Management</title>
+                                <sort_order>1</sort_order>
+                            </faqgroup_management>
+                            <faq_management translate="title" module="faq">
+                                <title>FAQ Management</title>
+                                <sort_order>2</sort_order>
+                            </faq_management>
+                        </children>
+                    </faq>
+                    <system>
+                        <children>
+                            <config>
+                                <children>
+                                    <faq>
+                                        <title>FAQ</title>
+                                    </faq>
+                                </children>
+                            </config>
+                        </children>
+                    </system>
+                </children>
+            </admin>
+        </resources>
+    </acl>
+</config>

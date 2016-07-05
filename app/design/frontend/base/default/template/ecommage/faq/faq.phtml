@@ -1,0 +1,87 @@
+<?php $faqGroup = $this->getFaqGroupCollection(); ?>
+    <div class="faq-skin">
+        <h1><?php echo Mage::app()->getWebsite()->getName() . ' - ' . $this->__('FAQ') ?></h1>
+        <ul id="faq-group">
+            <?php if (!count($faqGroup)) : ?>
+                <div><?php echo $this->__('Sorry, there is no FAQ at the moment.'); ?></div>
+            <?php else : ?>
+                <?php foreach ($faqGroup as $group) : ?>
+
+                    <?php $faqCollection = $this->getFaqCollection($group); ?>
+                    <?php if (count($faqCollection)) : ?>
+                        <?php $count++; ?>
+                        <?php $liClass = $count % 2 == 0 ? 'even' : 'odd'; ?>
+                        <li class="<?php echo $liClass; ?>">
+                            <p class="faq-group-name"><?php echo $group->getName(); ?></p>
+                            <ul id="faq-item-<?php echo $group->getFaqGroupId(); ?>">
+                                <?php foreach ($faqCollection as $faq) : ?>
+                                    <?php
+                                    $helpfulRate = $faq->getHelpfulRate();
+                                    $totalRate = $faq->getTotalRate();
+                                    $faqId = $faq->getFaqId();
+                                    ?>
+                                    <li>
+                                        <p><?php echo $faq->getQuestion(); ?></p>
+
+                                        <div>
+                                            <div class="padded clearfix">
+                                                <span class="answer"><?php echo $this->getAnswer($faq); ?></span>
+                                                <?php if (Mage::helper('faq')->isHelpfulEnabled()) : ?>
+                                                    <div class="rate-block"
+                                                         id="rate-<?php echo $group->getFaqGroupId() ?>-block-<?php echo $faqId; ?>"><?php echo $this->__('Did you find this helpful?'); ?>
+                                                        <input type='radio' name='rate' value='1'
+                                                               onclick="updateRate(this.value, <?php echo $faqId ?>, <?php echo $group->getFaqGroupId() ?>)"/> <?php echo $this->__('YES'); ?>
+                                                        <input type='radio' name='rate' value='0'
+                                                               onclick="updateRate(this.value, <?php echo $faqId ?>, <?php echo $group->getFaqGroupId() ?>)"/> <?php echo $this->__('No'); ?>
+                                                    </div>
+                                                    <div class="summary-rate"
+                                                         id="summary-<?php echo $group->getFaqGroupId() ?>-rate-<?php echo $faqId; ?>"
+                                                         <?php if (!$helpfulRate && !$totalRate) : ?>style="display: none"<?php endif; ?>><?php echo $helpfulRate; ?><?php echo $this->__('out of'); ?>
+                                                        <?php echo $totalRate ?><?php echo $this->__('people found this answer helpful'); ?>
+                                                    </div>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                    </li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </li>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </ul>
+    </div>
+<?php if (Mage::helper('faq')->isHelpfulEnabled()) : ?>
+    <script type="text/javascript">
+        function updateRate(rate, faqId, groupId) {
+            var url = '<?php echo $this->getUrl('faq/index/updateRate'); ?>';
+            var summaryBlock = 'summary-' + groupId + '-rate-' + faqId;
+            var rateBlock = 'rate-' + groupId + '-block-' + faqId;
+            new Ajax.Request(url, {
+                method: "post",
+                parameters: {
+                    rate: rate,
+                    id: faqId
+                },
+                onSuccess: function (transport) {
+                    var data = JSON.parse(transport.responseText);
+                    document.getElementById(summaryBlock).innerHTML = data['return_message'];
+                    document.getElementById(summaryBlock).style.display = 'block';
+                    document.getElementById(rateBlock).style.display = 'none';
+                }
+            });
+        }
+    </script>
+<?php endif; ?>
+<?php foreach ($faqGroup as $group) : ?>
+    <script type="text/javascript">
+        var menu1 = new YAHOO.widget.AccordionView('faq-item-<?php echo $group->getFaqGroupId(); ?>', {
+            collapsible: true,
+            width: 'auto',
+            expandItem: -1,
+            animationSpeed: '0.5',
+            animate: true,
+            effect: YAHOO.util.Easing.easeBothStrong
+        });
+    </script>
+<?php endforeach; ?>
